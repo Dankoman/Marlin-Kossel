@@ -1,2 +1,2 @@
 # Marlin-Kossel
-Mitt kossel repo
+Mitt kossel repo för Anycubic Linear Plus
