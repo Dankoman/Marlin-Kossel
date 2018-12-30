@@ -587,10 +587,15 @@
 
   // If you are using a pre-configured hotend then you can use one of the value sets by uncommenting it
 
+  // Min
+  #define DEFAULT_Kp 30.73
+  #define DEFAULT_Ki 2.70
+  #define DEFAULT_Kd 87.49
+
   // Ultimaker
-  #define DEFAULT_Kp 22.2
-  #define DEFAULT_Ki 1.08
-  #define DEFAULT_Kd 114
+  //#define DEFAULT_Kp 22.2
+  //#define DEFAULT_Ki 1.08
+  //#define DEFAULT_Kd 114
 
   // MakerGear
   //#define DEFAULT_Kp 7.0
@@ -773,11 +778,12 @@
   //#define DELTA_HEIGHT 250.00 // get this value from auto calibrate
 
 
-  #define DELTA_ENDSTOP_ADJ { -0.68, 0.0, -1.81 } // get these from auto calibrate
+  #define DELTA_ENDSTOP_ADJ { -0.80, 0.0, -0.89 } // get these from auto calibrate
 
   // Horizontal distance bridged by diagonal push rods when effector is centered.
   #if ENABLED(LINEAR_PLUS)
-    #define DELTA_RADIUS 134.38 //mm  Get this value from auto calibrate
+    //#define DELTA_RADIUS 134.38 //mm  Get this value from auto calibrate
+    #define DELTA_RADIUS 132.42 //mm  Get this value from auto calibrate
   #else
     #define DELTA_RADIUS 101.31 //mm  Get this value from auto calibrate
   #endif
@@ -786,7 +792,7 @@
   // tower angle corrections for X and Y tower / rotate XYZ so Z tower angle = 0
   // measured in degrees anticlockwise looking from above the printer
 
-  #define DELTA_TOWER_ANGLE_TRIM { -0.27, -0.42, 0.6 } // get these values from auto calibrate
+  #define DELTA_TOWER_ANGLE_TRIM { -0.34, -0.32, 0.66 } // get these values from auto calibrate
 
 
   // delta radius and diaginal rod adjustments measured in mm
