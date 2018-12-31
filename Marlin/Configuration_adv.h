@@ -1,5 +1,5 @@
-/**
- * Marlin 3D Printer Firmware
+﻿/**
+ *hhh Marlin 3D Printer Firmware
  * Copyright (C) 2016 MarlinFirmware [https://github.com/MarlinFirmware/Marlin]
  *
  * Based on Sprinter and grbl.
@@ -98,13 +98,13 @@
  * Thermal Protection parameters for the bed are just as above for hotends.
  */
 #if ENABLED(THERMAL_PROTECTION_BED)
-  #define THERMAL_PROTECTION_BED_PERIOD 20    // Seconds
-  #define THERMAL_PROTECTION_BED_HYSTERESIS 2 // Degrees Celsius
+  #define THERMAL_PROTECTION_BED_PERIOD 60    // Seconds
+  #define THERMAL_PROTECTION_BED_HYSTERESIS 4 // Degrees Celsius
 
   /**
    * As described above, except for the bed (M140/M190/M303).
    */
-  #define WATCH_BED_TEMP_PERIOD 60                // Seconds
+  #define WATCH_BED_TEMP_PERIOD 120                // Seconds
   #define WATCH_BED_TEMP_INCREASE 2               // Degrees Celsius
 #endif
 
@@ -195,10 +195,15 @@
  *
  * The fan will turn on automatically whenever any stepper is enabled
  * and turn off after a set period after all steppers are turned off.
+ * 
+ * To enable just uncomment the next line, all the TRIGORILLA board pins
+ * definitions are all ready done
  */
 //#define USE_CONTROLLER_FAN
 #if ENABLED(USE_CONTROLLER_FAN)
-  //#define CONTROLLER_FAN_PIN -1        // Set a custom pin for the controller fan
+
+  #define CONTROLLER_FAN_PIN FAN_PIN        // Set a custom pin for the controller fan
+
   #define CONTROLLERFAN_SECS 60          // Duration in seconds for the fan to run after all motors are disabled
   #define CONTROLLERFAN_SPEED 255        // 255 == full speed
 #endif
@@ -237,7 +242,7 @@
  * Multiple extruders can be assigned to the same pin in which case
  * the fan will turn on when any selected extruder is above the threshold.
  */
-#define E0_AUTO_FAN_PIN -1
+#define E0_AUTO_FAN_PIN FAN2_PIN // FAN2 slot on the TRIGORRILA board
 #define E1_AUTO_FAN_PIN -1
 #define E2_AUTO_FAN_PIN -1
 #define E3_AUTO_FAN_PIN -1
@@ -331,15 +336,18 @@
   #endif
 #endif
 
-// Enable this for dual x-carriage printers.
-// A dual x-carriage design has the advantage that the inactive extruder can be parked which
-// prevents hot-end ooze contaminating the print. It also reduces the weight of each x-carriage
-// allowing faster printing speeds. Connect your X2 stepper to the first unused E plug.
+/**
+ * Dual X Carriage
+ *
+ * This setup has two X carriages that can move independently, each with its own hotend.
+ * The carriages can be used to print an object with two colors or materials, or in
+ * "duplication mode" it can print two identical or X-mirrored objects simultaneously.
+ * The inactive carriage is parked automatically to prevent oozing.
+ * X1 is the left carriage, X2 the right. They park and home at opposite ends of the X axis.
+ * By default the X2 stepper is assigned to the first unused E plug on the board.
+ */
 //#define DUAL_X_CARRIAGE
 #if ENABLED(DUAL_X_CARRIAGE)
-  // Configuration for second X-carriage
-  // Note: the first x-carriage is defined as the x-carriage which homes to the minimum endstop;
-  // the second x-carriage always homes to the maximum endstop.
   #define X1_MIN_POS X_MIN_POS  // set minimum to ensure first x-carriage doesn't hit the parked second X-carriage
   #define X1_MAX_POS X_BED_SIZE // set maximum to ensure first x-carriage doesn't hit the parked second X-carriage
   #define X2_MIN_POS 80     // set minimum to ensure second x-carriage doesn't hit the parked first X-carriage
@@ -381,8 +389,8 @@
 // Homing hits each endstop, retracts by these distances, then does a slower bump.
 #define X_HOME_BUMP_MM 5
 #define Y_HOME_BUMP_MM 5
-#define Z_HOME_BUMP_MM 2
-#define HOMING_BUMP_DIVISOR { 2, 2, 4 }  // Re-Bump Speed Divisor (Divides the Homing Feedrate)
+#define Z_HOME_BUMP_MM 5 // deltas need the same for all three axes
+#define HOMING_BUMP_DIVISOR { 10, 10, 10 }  // Re-Bump Speed Divisor (Divides the Homing Feedrate)
 //#define QUICK_HOME                     // If homing includes X and Y, do a diagonal move initially
 
 // When G28 is called, this option will make Y home before X
@@ -407,7 +415,7 @@
 // Default stepper release if idle. Set to 0 to deactivate.
 // Steppers will shut down DEFAULT_STEPPER_DEACTIVE_TIME seconds after the last move when DISABLE_INACTIVE_? is true.
 // Time can be set by M18 and M84.
-#define DEFAULT_STEPPER_DEACTIVE_TIME 120
+#define DEFAULT_STEPPER_DEACTIVE_TIME 15
 #define DISABLE_INACTIVE_X true
 #define DISABLE_INACTIVE_Y true
 #define DISABLE_INACTIVE_Z true  // set to false if the nozzle will fall down on your printed part when print has finished.
@@ -421,7 +429,8 @@
 // @section lcd
 
 #if ENABLED(ULTIPANEL)
-  #define MANUAL_FEEDRATE {50*60, 50*60, 4*60, 60} // Feedrates for manual moves along X, Y, Z, E from panel
+  #define MANUAL_FEEDRATE_XYZ 50*60
+  #define MANUAL_FEEDRATE { MANUAL_FEEDRATE_XYZ, MANUAL_FEEDRATE_XYZ, MANUAL_FEEDRATE_XYZ, 60 } // Feedrates for manual moves along X, Y, Z, E from panel
   #define ULTIPANEL_FEEDMULTIPLY  // Comment to disable setting feedrate multiplier via encoder
 #endif
 
@@ -431,7 +440,8 @@
 #define DEFAULT_MINSEGMENTTIME        20000
 
 // If defined the movements slow down when the look ahead buffer is only half full
-#define SLOWDOWN
+// (don't use SLOWDOWN with DELTA because DELTA generates hundreds of segments per second)
+//#define SLOWDOWN
 
 // Frequency limit
 // See nophead's blog for more info
@@ -521,16 +531,17 @@
 // @section lcd
 
 // Include a page of printer information in the LCD Main Menu
-//#define LCD_INFO_MENU
+#define LCD_INFO_MENU
+
 
 // Scroll a longer status message into view
-//#define STATUS_MESSAGE_SCROLLING
+#define STATUS_MESSAGE_SCROLLING
 
 // On the Info Screen, display XY with one decimal place when possible
 //#define LCD_DECIMAL_SMALL_XY
 
 // The timeout (in ms) to return to the status screen from sub-menus
-//#define LCD_TIMEOUT_TO_STATUS 15000
+#define LCD_TIMEOUT_TO_STATUS 30000
 
 // Add an 'M73' G-code to set the current percentage
 //#define LCD_SET_PROGRESS_MANUALLY
@@ -633,6 +644,31 @@
     #define SDSORT_CACHE_VFATS 2      // Maximum number of 13-byte VFAT entries to use for sorting.
                                       // Note: Only affects SCROLL_LONG_FILENAMES with SDSORT_CACHE_NAMES but not SDSORT_DYNAMIC_RAM.
   #endif
+
+
+  // Show a progress bar on HD44780 LCDs for SD printing
+  #if ENABLED(FULL_GRAPHIC_CONTROLLER)
+    //#define LCD_PROGRESS_BAR
+  #else
+    //#define LCD_PROGRESS_BAR
+  #endif
+
+  #if ENABLED(LCD_PROGRESS_BAR)
+    // Amount of time (ms) to show the bar
+    #define PROGRESS_BAR_BAR_TIME 2000
+    // Amount of time (ms) to show the status message
+    #define PROGRESS_BAR_MSG_TIME 3000
+    // Amount of time (ms) to retain the status message (0=forever)
+    #define PROGRESS_MSG_EXPIRE   0
+    // Enable this to show messages for MSG_TIME then hide them
+    //#define PROGRESS_MSG_ONCE
+    // Add a menu item to test the progress bar:
+    //#define LCD_PROGRESS_BAR_TEST
+  #endif
+
+  // Add an 'M73' G-code to set the current percentage
+  //#define LCD_SET_PROGRESS_MANUALLY
+
 
   // This allows hosts to request long names for files and folders with M33
   //#define LONG_FILENAME_HOST_SUPPORT
@@ -741,7 +777,7 @@
  *
  * Warning: Does not respect endstops!
  */
-//#define BABYSTEPPING
+#define BABYSTEPPING
 #if ENABLED(BABYSTEPPING)
   //#define BABYSTEP_XY              // Also enable X/Y Babystepping. Not supported on DELTA!
   #define BABYSTEP_INVERT_Z false    // Change if Z babysteps should go the other way
@@ -771,9 +807,9 @@
  * See http://marlinfw.org/docs/features/lin_advance.html for full instructions.
  * Mention @Sebastianv650 on GitHub to alert the author of any issues.
  */
-//#define LIN_ADVANCE
+#define LIN_ADVANCE
 #if ENABLED(LIN_ADVANCE)
-  #define LIN_ADVANCE_K 0.22  // Unit: mm compression per 1mm/s extruder speed
+  #define LIN_ADVANCE_K 0  // Unit: mm compression per 1mm/s extruder speed
   //#define LA_DEBUG          // If enabled, this will generate debug information output over USB.
 #endif
 

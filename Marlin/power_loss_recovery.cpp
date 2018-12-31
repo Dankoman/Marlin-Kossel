@@ -42,6 +42,7 @@ job_recovery_info_t job_recovery_info;
 JobRecoveryPhase job_recovery_phase = JOB_RECOVERY_IDLE;
 uint8_t job_recovery_commands_count; //=0
 char job_recovery_commands[BUFSIZE + APPEND_CMD_COUNT][MAX_CMD_SIZE];
+
 // Extern
 extern uint8_t active_extruder, commands_in_queue, cmd_queue_index_r;
 
@@ -59,6 +60,7 @@ extern uint8_t active_extruder, commands_in_queue, cmd_queue_index_r;
         }
         SERIAL_EOL();
         SERIAL_PROTOCOLLNPAIR("feedrate: ", job_recovery_info.feedrate);
+
 
         #if HOTENDS > 1
           SERIAL_PROTOCOLLNPAIR("active_hotend: ", int(job_recovery_info.active_hotend));
@@ -88,6 +90,7 @@ extern uint8_t active_extruder, commands_in_queue, cmd_queue_index_r;
           SERIAL_PROTOCOLPAIR("leveling: ", int(job_recovery_info.leveling));
           SERIAL_PROTOCOLLNPAIR(" fade: ", int(job_recovery_info.fade));
         #endif
+
         SERIAL_PROTOCOLLNPAIR("cmd_queue_index_r: ", int(job_recovery_info.cmd_queue_index_r));
         SERIAL_PROTOCOLLNPAIR("commands_in_queue: ", int(job_recovery_info.commands_in_queue));
         if (recovery)
@@ -101,7 +104,9 @@ extern uint8_t active_extruder, commands_in_queue, cmd_queue_index_r;
       else
         SERIAL_PROTOCOLLNPGM("INVALID DATA");
     }
+
     SERIAL_PROTOCOLLNPGM("---------------------------");
+
   }
 #endif // DEBUG_POWER_LOSS_RECOVERY
 
@@ -112,6 +117,7 @@ extern uint8_t active_extruder, commands_in_queue, cmd_queue_index_r;
  * commands to restore the machine state and continue the file.
  */
 void check_print_job_recovery() {
+
   memset(&job_recovery_info, 0, sizeof(job_recovery_info));
   ZERO(job_recovery_commands);
 
@@ -120,7 +126,9 @@ void check_print_job_recovery() {
   if (card.cardOK) {
 
     #if ENABLED(DEBUG_POWER_LOSS_RECOVERY)
+
       SERIAL_PROTOCOLLNPAIR("Init job recovery info. Size: ", int(sizeof(job_recovery_info)));
+
     #endif
 
     if (card.jobRecoverFileExists()) {
@@ -159,7 +167,7 @@ void check_print_job_recovery() {
         #endif
 
         dtostrf(job_recovery_info.current_position[Z_AXIS] + 2, 1, 3, str_1);
-        dtostrf(job_recovery_info.current_position[E_AXIS]
+        dtostrf(job_recovery_info.current_position[E_CART]
           #if ENABLED(SAVE_EACH_CMD_MODE)
             - 5
           #endif

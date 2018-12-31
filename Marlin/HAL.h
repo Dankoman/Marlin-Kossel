@@ -152,6 +152,8 @@ FORCE_INLINE void HAL_timer_start(const uint8_t timer_num, const uint32_t freque
 
 #define _CAT(a, ...) a ## __VA_ARGS__
 #define HAL_timer_set_compare(timer, compare) (_CAT(TIMER_OCR_, timer) = compare)
+
+
 #define HAL_timer_get_compare(timer) _CAT(TIMER_OCR_, timer)
 #define HAL_timer_get_count(timer) _CAT(TIMER_COUNTER_, timer)
 
@@ -325,8 +327,10 @@ inline void HAL_adc_init(void) {
   #define HAL_START_ADC(pin) ADCSRB = 0; SET_ADMUX_ADCSRA(pin)
 #endif
 
+
 #define HAL_READ_ADC()  ADC
 #define HAL_ADC_READY() !TEST(ADCSRA, ADSC)
+
 
 #define GET_PIN_MAP_PIN(index) index
 #define GET_PIN_MAP_INDEX(pin) pin
